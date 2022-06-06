@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		ADF3BA34284BCC2E001E185D /* FirebaseChatTutorialApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF3BA33284BCC2E001E185D /* FirebaseChatTutorialApp.swift */; };
-		ADF3BA36284BCC2E001E185D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF3BA35284BCC2E001E185D /* ContentView.swift */; };
+		ADF3BA36284BCC2E001E185D /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF3BA35284BCC2E001E185D /* LoginView.swift */; };
 		ADF3BA38284BCC2F001E185D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ADF3BA37284BCC2F001E185D /* Assets.xcassets */; };
 		ADF3BA3B284BCC2F001E185D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ADF3BA3A284BCC2F001E185D /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -16,7 +16,7 @@
 /* Begin PBXFileReference section */
 		ADF3BA30284BCC2E001E185D /* FirebaseChatTutorial.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseChatTutorial.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ADF3BA33284BCC2E001E185D /* FirebaseChatTutorialApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseChatTutorialApp.swift; sourceTree = "<group>"; };
-		ADF3BA35284BCC2E001E185D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		ADF3BA35284BCC2E001E185D /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		ADF3BA37284BCC2F001E185D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ADF3BA3A284BCC2F001E185D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -52,7 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				ADF3BA33284BCC2E001E185D /* FirebaseChatTutorialApp.swift */,
-				ADF3BA35284BCC2E001E185D /* ContentView.swift */,
+				ADF3BA35284BCC2E001E185D /* LoginView.swift */,
 				ADF3BA37284BCC2F001E185D /* Assets.xcassets */,
 				ADF3BA39284BCC2F001E185D /* Preview Content */,
 			);
@@ -137,7 +137,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ADF3BA36284BCC2E001E185D /* ContentView.swift in Sources */,
+				ADF3BA36284BCC2E001E185D /* LoginView.swift in Sources */,
 				ADF3BA34284BCC2E001E185D /* FirebaseChatTutorialApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
