@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct LoginView: View {
     
     @State var isLoginMode = false
     @State var email = ""
     @State var password = ""
+    
+    init() {
+        FirebaseApp.configure()
+    }
     
     var body: some View {
         NavigationView {
@@ -64,6 +69,7 @@ struct LoginView: View {
             .background(Color(.init(white: 0,alpha: 0.05))
             .ignoresSafeArea())
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     private func handleAction() {
         if isLoginMode {
