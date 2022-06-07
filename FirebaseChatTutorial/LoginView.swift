@@ -61,6 +61,8 @@ struct LoginView: View {
                         Spacer()
                     }.background(.blue)
                 }
+                    Text(self.loginStatusMessage)
+                        .foregroundColor(.red)
             }
                 .padding()
                 
@@ -75,7 +77,23 @@ struct LoginView: View {
         if isLoginMode {
             print("Should log into Firebase with existing credentials")
         } else {
-            print("Register a new account inside of Firebase Auth and then store image in Storage somehow...")
+//            print("Register a new account inside of Firebase Auth and then store image in Storage somehow...")
+            createNewAccount()
+        }
+    }
+    @State var loginStatusMessage = ""
+    
+    private func createNewAccount() {
+        Auth.auth().createUser(withEmail: self.email, password: password) {
+            result, err in
+            if let err = err {
+                print("Failed to create user:", err)
+                self.loginStatusMessage = "Failed to create user: \(err)"
+                return
+            }
+            print("Successfully created user: \(result?.user.uid ?? "")")
+            
+            self.loginStatusMessage = "Successfully created user: \(result?.user.uid ?? "")"
         }
     }
 }
