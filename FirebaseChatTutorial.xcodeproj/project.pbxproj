@@ -17,6 +17,7 @@
 		ADF3BA36284BCC2E001E185D /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF3BA35284BCC2E001E185D /* LoginView.swift */; };
 		ADF3BA38284BCC2F001E185D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ADF3BA37284BCC2F001E185D /* Assets.xcassets */; };
 		ADF3BA3B284BCC2F001E185D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ADF3BA3A284BCC2F001E185D /* Preview Assets.xcassets */; };
+		ADF6B6D9285636E3006657FD /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF6B6D8285636E3006657FD /* FirebaseManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		ADF3BA35284BCC2E001E185D /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		ADF3BA37284BCC2F001E185D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ADF3BA3A284BCC2F001E185D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		ADF6B6D8285636E3006657FD /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 		ADF3BA32284BCC2E001E185D /* FirebaseChatTutorial */ = {
 			isa = PBXGroup;
 			children = (
+				ADF6B6D7285636CB006657FD /* Utils */,
 				AD98A6A628536668009F2844 /* MainMessages */,
 				ADF3BA33284BCC2E001E185D /* FirebaseChatTutorialApp.swift */,
 				ADF3BA35284BCC2E001E185D /* LoginView.swift */,
@@ -88,6 +91,14 @@
 				ADF3BA3A284BCC2F001E185D /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		ADF6B6D7285636CB006657FD /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				ADF6B6D8285636E3006657FD /* FirebaseManager.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,6 +182,7 @@
 			files = (
 				AD032A692851DAD0000CCAF4 /* ImagePicker.swift in Sources */,
 				ADF3BA36284BCC2E001E185D /* LoginView.swift in Sources */,
+				ADF6B6D9285636E3006657FD /* FirebaseManager.swift in Sources */,
 				AD98A6A82853667C009F2844 /* MainMessagesView.swift in Sources */,
 				ADF3BA34284BCC2E001E185D /* FirebaseChatTutorialApp.swift in Sources */,
 			);

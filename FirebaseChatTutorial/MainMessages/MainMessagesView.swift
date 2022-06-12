@@ -7,9 +7,63 @@
 
 import SwiftUI
 
+struct ChatUser {
+    let uid, email, profileImageUrl: String 
+}
+
+class MainMessagesViewModel: ObservableObject {
+    
+    @Published var errorMessage = ""
+   
+    init() {
+        fetchCurrentUser()
+    }
+    
+    private func fetchCurrentUser() {
+        
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
+            self.errorMessage = "Could not find firebase uid"
+            return }
+        
+        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
+            if let error = error {
+                self.errorMessage = "Failed to fetch current user: \(error)"
+                print("Failed to fetch current user:", error)
+                return
+            }
+            self.errorMessage = "123"
+            
+            guard let data = snapshot?.data() else {
+                self.errorMessage = "No data found"
+                return }
+            
+            self.errorMessage = "Data: \(data.description)"
+        }
+    }
+}
+
 struct MainMessagesView: View {
     
     @State var shouldShowLogOutOptions = false
+    
+    @ObservedObject private var vm = MainMessagesViewModel()
+    
+    
+    var body: some View {
+        NavigationView {
+            
+            VStack {
+                
+                Text("CURRENT USER ID: \(vm.errorMessage)")
+                customNavBar
+                messagesView
+        }
+                .overlay(
+                    newMessageButton, alignment: .bottom)
+                .navigationBarHidden(true)
+           }
+     }
+    
     private var customNavBar: some View {
         HStack(spacing: 16) {
             Image(systemName: "person.fill")
@@ -45,22 +99,8 @@ struct MainMessagesView: View {
             }
     }
     
-    var body: some View {
-        NavigationView {
-            
-            VStack {
-                customNavBar
-                messagesView
-        }
-                .overlay(
-                    newMessageButton, alignment: .bottom)
-                .navigationBarHidden(true)
-           }
-     }
-    
     private var messagesView: some View {
-        ScrollView {
-            ForEach(0..<10, id: \.self) { num in
+        ScrollView {ForEach(0..<10, id: \.self) { num in
                 VStack {
                     HStack(spacing: 16) {
                     Image(systemName: "person.fill")

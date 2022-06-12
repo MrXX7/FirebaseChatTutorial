@@ -7,37 +7,14 @@
 
 import SwiftUI
 import Firebase
-import FirebaseStorage
-
-class FirebaseManager: NSObject {
-    
-    let auth: Auth
-    let storage: Storage
-    let firestore: Firestore
-    
-    static let shared = FirebaseManager()
-    
-   override init() {
-        FirebaseApp.configure()
-       
-       self.auth = Auth.auth()
-       self.storage = Storage.storage()
-       self.firestore = Firestore.firestore()
-       
-       super.init()
-    }
-}
 
 struct LoginView: View {
     
     @State var isLoginMode = false
     @State var email = ""
     @State var password = ""
-    @State var shouldShowImagePicker = false
     
-    init() {
-        FirebaseApp.configure()
-    }
+    @State var shouldShowImagePicker = false
     
     var body: some View {
         NavigationView {
