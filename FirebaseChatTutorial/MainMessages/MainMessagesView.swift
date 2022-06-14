@@ -46,9 +46,13 @@ class MainMessagesViewModel: ObservableObject {
             
             self.chatUser = ChatUser(uid: uid, email: email, profileImageUrl: profileImageUrl)
             
-//            self.errorMessage = chatUser.profileImageUrl
         }
     }
+    @Published var isUserCurrentlyLoggedIn = true
+    func handleSignOut() {
+        
+    }
+    
 }
 
 struct MainMessagesView: View {
@@ -117,6 +121,10 @@ struct MainMessagesView: View {
             .init(title: Text("Settings"), message: Text("What do you want to do?"), buttons: [.destructive(Text("Sign Out"), action: {
                 print("handle sign out")}),.cancel()])
             }
+        
+        .fullScreenCover(isPresented: $vm.isUserCurrentlyLoggedIn, onDismiss: nil) {
+            Text("Cover")
+        }
     }
     
     private var messagesView: some View {
