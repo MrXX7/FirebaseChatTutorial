@@ -10,11 +10,13 @@ import Firebase
 
 struct LoginView: View {
     
-    @State var isLoginMode = false
-    @State var email = ""
-    @State var password = ""
+    let didCompleteLoginProcess: () -> ()
     
-    @State var shouldShowImagePicker = false
+    @State private var isLoginMode = false
+    @State private var email = ""
+    @State private var password = ""
+    
+    @State private var shouldShowImagePicker = false
     
     var body: some View {
         NavigationView {
@@ -112,13 +114,18 @@ struct LoginView: View {
             print("Successfully logged in as user: \(result?.user.uid ?? "")")
             
             self.loginStatusMessage = "Successfully logged in as user: \(result?.user.uid ?? "")"
-                
+            
+            self.didCompleteLoginProcess()
             }
         }
     
     @State var loginStatusMessage = ""
     
     private func createNewAccount() {
+        if self.image == nil {
+            self.loginStatusMessage = "You must select an avatar image"
+            return
+        }
         FirebaseManager.shared.auth.createUser(withEmail: self.email, password: password) {
             result, err in
             if let err = err {
@@ -141,7 +148,7 @@ struct LoginView: View {
        let ref = FirebaseManager.shared.storage.reference(withPath: uid)
         guard let imageData = self.image?.jpegData(compressionQuality: 0.5) else { return }
         
-        ref.putData(imageData, metadata: nil) { metadata, err in
+        ref.putData(imageData, metadata:nil) { metadata, err in
             if let err = err {
                 self.loginStatusMessage = "Failed to push image to Storage: \(err)"
                 return
@@ -169,11 +176,14 @@ struct LoginView: View {
                     return
                 }
                 print("Success")
+                self.didCompleteLoginProcess()
             }
       }
    }
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        LoginView(didCompleteLoginProcess: {
+            
+        })
     }
 }

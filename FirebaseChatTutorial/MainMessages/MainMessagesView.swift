@@ -8,21 +8,20 @@
 import SwiftUI
 import SDWebImageSwiftUI
 
-struct ChatUser {
-    let uid, email, profileImageUrl: String 
-}
-
 class MainMessagesViewModel: ObservableObject {
     
     @Published var errorMessage = ""
     @Published var chatUser: ChatUser?
    
     init() {
+        DispatchQueue.main.sync {
+            self.isUserCurrentlyLoggedOut =
+            FirebaseManager.shared.auth.currentUser?.uid == nil
+        }
         fetchCurrentUser()
     }
     
-    private func fetchCurrentUser() {
-        
+    func fetchCurrentUser() {
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
             self.errorMessage = "Could not find firebase uid"
             return }
@@ -33,24 +32,19 @@ class MainMessagesViewModel: ObservableObject {
                 print("Failed to fetch current user:", error)
                 return
             }
-//            self.errorMessage = "123"
             
             guard let data = snapshot?.data() else {
                 self.errorMessage = "No data found"
                 return }
             
-//            self.errorMessage = "Data: \(data.description)"
-            let uid = data["uid"] as? String ?? ""
-            let email = data["email"] as? String ?? ""
-            let profileImageUrl = data["profileImageUrl"] as? String ?? ""
-            
-            self.chatUser = ChatUser(uid: uid, email: email, profileImageUrl: profileImageUrl)
+            self.chatUser = .init(data: data)
             
         }
     }
-    @Published var isUserCurrentlyLoggedIn = true
+    @Published var isUserCurrentlyLoggedOut = false
     func handleSignOut() {
-        
+        isUserCurrentlyLoggedOut.toggle()
+        try? FirebaseManager.shared.auth.signOut()
     }
     
 }
@@ -119,11 +113,16 @@ struct MainMessagesView: View {
         .padding()
         .actionSheet(isPresented: $shouldShowLogOutOptions) {
             .init(title: Text("Settings"), message: Text("What do you want to do?"), buttons: [.destructive(Text("Sign Out"), action: {
-                print("handle sign out")}),.cancel()])
+                print("handle sign out")
+                vm.handleSignOut()
+            }),.cancel()])
             }
         
-        .fullScreenCover(isPresented: $vm.isUserCurrentlyLoggedIn, onDismiss: nil) {
-            Text("Cover")
+        .fullScreenCover(isPresented: $vm.isUserCurrentlyLoggedOut, onDismiss: nil) {
+            LoginView(didCompleteLoginProcess: {
+                self.vm.isUserCurrentlyLoggedOut = false
+                self.vm.fetchCurrentUser()
+            })
         }
     }
     

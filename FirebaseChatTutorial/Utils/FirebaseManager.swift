@@ -7,6 +7,8 @@
 
 import Foundation
 import Firebase
+import FirebaseStorage
+import FirebaseFirestore
 
 class FirebaseManager: NSObject {
     
