@@ -12,6 +12,7 @@ class MainMessagesViewModel: ObservableObject {
     
     @Published var errorMessage = ""
     @Published var chatUser: ChatUser?
+    @Published var isUserCurrentlyLoggedOut = false
    
     init() {
         DispatchQueue.main.sync {
@@ -35,13 +36,14 @@ class MainMessagesViewModel: ObservableObject {
             
             guard let data = snapshot?.data() else {
                 self.errorMessage = "No data found"
-                return }
-            
+                return
+            }
             self.chatUser = .init(data: data)
             
         }
     }
-    @Published var isUserCurrentlyLoggedOut = false
+    
+//    @Published var isUserCurrentlyLoggedOut = false
     func handleSignOut() {
         isUserCurrentlyLoggedOut.toggle()
         try? FirebaseManager.shared.auth.signOut()
@@ -154,9 +156,11 @@ struct MainMessagesView: View {
         }.padding(.bottom, 50)
         }
     }
+    @State var shouldShowNewMessageScreen = false
+    
     private var newMessageButton: some View {
         Button {
-        
+            shouldShowNewMessageScreen.toggle()
     } label: {
         HStack {
         Spacer()
@@ -170,6 +174,9 @@ struct MainMessagesView: View {
             .cornerRadius(32)
             .padding(.horizontal)
             .shadow(radius: 15)
+    }
+    .fullScreenCover(isPresented: $shouldShowNewMessageScreen) {
+        CreateNewMessageView()
     }
     }
 }
