@@ -19,21 +19,33 @@ class ChatLogViewModel: ObservableObject {
     }
     func handleSend() {
         print(chatText)
-        guard let fromId =
-                FirebaseManager.shared.auth.currentUser?.uid else { return }
+        
+        guard let fromId = FirebaseManager.shared.auth.currentUser?.uid else
+        { return }
+        
         guard let toId = chatUser?.uid else { return }
         
-        let document =
-        FirebaseManager.shared.firestore.collection("messages")
-            .document(fromId)
-            .collection(toId)
-            .document()
+        let document = FirebaseManager.shared.firestore.collection("messages").document(fromId).collection(toId).document()
         
         let messageData = ["fromId": fromId, "toId": toId, "text": self.chatText, "timestamp": Timestamp()] as [String : Any]
+        
         document.setData(messageData) { error in
             if let error = error {
+                print(error)
                 self.errorMessage = "Failed to save message into Firestore: \(error)"
+                return
             }
+            print("Successfully saved current user sending message")
+        }
+        let recipientMessageDocument = FirebaseManager.shared.firestore.collection("messages").document(toId).collection(fromId).document()
+        
+        recipientMessageDocument.setData(messageData) { error in
+            if let error = error {
+                print(error)
+                self.errorMessage = "Failed to save message into Firestore: \(error)"
+                return
+            }
+            print("Recipient saved message as well")
         }
     }
 }
@@ -47,10 +59,13 @@ struct ChatLogView: View {
         self.vm = .init(chatUser: chatUser)
     }
 
-    @ObservedObject var vm = ChatLogViewModel
+    @ObservedObject var vm: ChatLogViewModel
     
     var body: some View {
-        messagesView
+        ZStack {
+            messagesView
+            Text(vm.errorMessage)
+        }
         .navigationTitle(chatUser?.email ?? "")
             .navigationBarTitleDisplayMode(.inline)
     }
@@ -114,8 +129,8 @@ struct ChatLogView: View {
 
 struct ChatLogView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            ChatLogView(chatUser: .init(data: ["uid": "REAL USER ID", "email": "watefall1@gmail.com"]))
+//        NavigationView {
+//            ChatLogView(chatUser: .init(data: ["uid": "REAL USER ID", "email": "watefall1@gmail.com"]))
+        MainMessagesView()
         }
     }
-}
