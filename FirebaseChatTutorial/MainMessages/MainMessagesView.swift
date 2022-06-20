@@ -55,6 +55,7 @@ class MainMessagesViewModel: ObservableObject {
             .collection("recent_messages")
             .document(uid)
             .collection("messages")
+            .order(by: "timestamp")
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
                     self.errorMessage = "Failed to listen for recent message: \(error)"
@@ -62,10 +63,15 @@ class MainMessagesViewModel: ObservableObject {
                     return
                 }
                 querySnapshot?.documentChanges.forEach({ change in
-                    if change.type == .added {
                         let docId = change.document.documentID
-                        self.recentMessages.append(.init(documentId: docId, data: change.document.data()))
+                    
+                    if let index = self.recentMessages.firstIndex(where: { rm in
+                        return rm.documentId == docId
+                    }) {
+                        self.recentMessages.remove(at: index)
                     }
+                        self.recentMessages.insert(.init(documentId: docId,
+                            data: change.document.data()), at: 0)
                 })
                 }
     }
@@ -181,27 +187,35 @@ struct MainMessagesView: View {
     }
     
     private var messagesView: some View {
-        ScrollView {ForEach(0..<10, id: \.self) { num in
+        ScrollView {
+            ForEach(vm.recentMessages) { recentMessage in
                 VStack {
                     NavigationLink{
                         Text("Destination")
                     } label: {
                         HStack(spacing: 16) {
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 32))
-                            .padding()
-                            .overlay(RoundedRectangle(cornerRadius: 44)
-                                .stroke(Color(.label), lineWidth: 1)
-                            )
-                            
-                        VStack(alignment: .leading) {
-                            Text("Username")
+                            WebImage(url: URL(string:
+                                                recentMessage.profileImageUrl))
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 64, height: 64)
+                            .clipped()
+                            .cornerRadius(64)
+                            .overlay(RoundedRectangle(cornerRadius: 64)
+                                .stroke(Color.black, lineWidth: 1))
+                            .shadow(radius: 5)
+                          
+                            VStack(alignment: .leading, spacing: 8) {
+                            Text(recentMessage.email)
                                 .font(.system(size: 16, weight: .bold))
-                            Text("Message send to user")
+                                .foregroundColor(Color(.label))
+                            Text(recentMessage.text)
                                 .font(.system(size: 14))
-                            
-                            
+                                .foregroundColor(Color(.darkGray))
+                                .multilineTextAlignment(.leading)
                         }
+                            Spacer()
+                            
                         Text("22d")
                             .font(.system(size: 14, weight: .semibold))
                     }
