@@ -7,6 +7,28 @@
 
 import SwiftUI
 import SDWebImageSwiftUI
+import Firebase
+
+struct RecentMessage: Identifiable {
+    
+    var id: String { documentId }
+    
+    let documentId: String
+    let text, email: String
+    let fromId, toId: String
+    let profileImageUrl: String
+    let timestamp: Timestamp
+    
+    init(documentId: String, data: [String: Any]) {
+        self.documentId = documentId
+        self.text = data["text"] as? String ?? ""
+        self.fromId = data["fromId"] as? String ?? ""
+        self.toId = data["toId"] as? String ?? ""
+        self.profileImageUrl = data["profileImageUrl"] as? String ?? ""
+        self.email = data["email"] as? String ?? ""
+        self.timestamp = data["timestamp"] as? Timestamp ?? Timestamp(date: Date())
+    }
+}
 
 class MainMessagesViewModel: ObservableObject {
     
@@ -15,11 +37,37 @@ class MainMessagesViewModel: ObservableObject {
     @Published var isUserCurrentlyLoggedOut = false
    
     init() {
-        DispatchQueue.main.sync {
+        DispatchQueue.main.async {
             self.isUserCurrentlyLoggedOut =
             FirebaseManager.shared.auth.currentUser?.uid == nil
         }
         fetchCurrentUser()
+        
+        fetchRecentMessage()
+    }
+    
+    @Published var recentMessages = [RecentMessage]()
+    
+    private func fetchRecentMessage() {
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+        
+        FirebaseManager.shared.firestore
+            .collection("recent_messages")
+            .document(uid)
+            .collection("messages")
+            .addSnapshotListener { querySnapshot, error in
+                if let error = error {
+                    self.errorMessage = "Failed to listen for recent message: \(error)"
+                    print(error)
+                    return
+                }
+                querySnapshot?.documentChanges.forEach({ change in
+                    if change.type == .added {
+                        let docId = change.document.documentID
+                        self.recentMessages.append(.init(documentId: docId, data: change.document.data()))
+                    }
+                })
+                }
     }
     
     func fetchCurrentUser() {
