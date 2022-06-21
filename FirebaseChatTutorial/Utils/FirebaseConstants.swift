@@ -12,3 +12,4 @@ struct FirebaseConstants: Codable {
     static let toId = "toId"
     static let text = "text"
 }
+

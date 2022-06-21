@@ -102,6 +102,8 @@ struct MainMessagesView: View {
     
     @ObservedObject private var vm = MainMessagesViewModel()
     
+    private var chatLogViewModel = ChatLogViewModel(chatUser: nil)
+    
     
     var body: some View {
         NavigationView {
@@ -111,8 +113,7 @@ struct MainMessagesView: View {
                 messagesView
                 
                 NavigationLink("", isActive: $shouldNavigateToChatLogView) {
-                    ChatLogView(chatUser: self.chatUser)
-                    ChatLogView(vm: .init(chatUser: <#T##ChatUser?#>)
+                    ChatLogView(vm: chatLogViewModel)
                 }
         }
                 .overlay(
@@ -173,6 +174,7 @@ struct MainMessagesView: View {
                 self.vm.isUserCurrentlyLoggedOut = false
                 self.vm.fetchCurrentUser()
                 self.vm.fetchRecentMessage()
+                
             })
         }
     }
@@ -181,9 +183,19 @@ struct MainMessagesView: View {
         ScrollView {
             ForEach(vm.recentMessages) { recentMessage in
                 VStack {
-                    NavigationLink{
-                        Text("Destination")
-                    } label: {
+                    Button {
+                        let uid =
+                        FirebaseManager.shared.auth.currentUser?.uid == recentMessage.fromId ?
+                        self.chatUser = .init(data:
+                                                [FirebaseConstants.email:
+                                                    recentMessage.email,
+                                                 FirebaseConstants.profileImageUrl:
+                                                    recentMessage.profileImageUrl,
+                                                 FirebaseConstants.uid: uid]}
+                                              self.chatLogViewModel.chatUser = self.chatUser
+                                              self.chatLogViewModel.fetchMessages()
+                                              self.shouldNavigateToChatLogView.toggle()
+                                              } label: {
                         HStack(spacing: 16) {
                             WebImage(url: URL(string:
                                                 recentMessage.profileImageUrl))
@@ -195,6 +207,7 @@ struct MainMessagesView: View {
                             .overlay(RoundedRectangle(cornerRadius: 64)
                                 .stroke(Color.black, lineWidth: 1))
                             .shadow(radius: 5)
+                            
                           
                             VStack(alignment: .leading, spacing: 8) {
                             Text(recentMessage.email)
@@ -243,6 +256,8 @@ struct MainMessagesView: View {
             print(user.email)
             self.shouldNavigateToChatLogView.toggle()
             self.chatUser = user
+            self.chatLogViewModel.chatUser = user
+            self.chatLogViewModel.fetchMessages()
         })
     }
     }
