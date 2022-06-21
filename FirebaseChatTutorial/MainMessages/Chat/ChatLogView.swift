@@ -8,12 +8,6 @@
 import SwiftUI
 import Firebase
 
-struct FirebaseConstants {
-    static let fromId = "fromId"
-    static let toId = "toId"
-    static let text = "text"
-}
-
 class ChatLogViewModel: ObservableObject {
     @Published var chatText = ""
     @Published var errorMessage = ""
@@ -29,15 +23,16 @@ class ChatLogViewModel: ObservableObject {
     }
     
     private func fetchMessages() {
-        guard let fromId = FirebaseManager.shared.auth.currentUser?.uid else
+        guard let fromId =
+                FirebaseManager.shared.auth.currentUser?.uid else
         { return }
         
         guard let toId = chatUser?.uid else { return }
         FirebaseManager.shared.firestore
-            .collection("messages")
+            .collection(FirebaseConstants.messages)
             .document(fromId)
             .collection(toId)
-            .order(by: "timestamp")
+            .order(by: FirebaseConstants.timestamp)
             .addSnapshotListener{ querySnapshot, error in
                 if let error = error {
                     self.errorMessage = "Failed to listen for messages: \(error)"
@@ -47,8 +42,14 @@ class ChatLogViewModel: ObservableObject {
             
             querySnapshot?.documentChanges.forEach({ change in
                 if change.type == .added {
-                    let data = change.document.data()
-                    self.chatMessages.append(.init(documentId: change.document.documentID, data: data))
+                    do {
+                        if let cm = try
+                            change.document.data(as: ChatMessage.self) {
+                            self.chatMessages.append(cm)
+                        }
+                    } catch {
+                        print("Failed to decode message: \(error)")
+                    }
                 }
             })
                 DispatchQueue.main.async {
@@ -65,11 +66,16 @@ class ChatLogViewModel: ObservableObject {
         
         guard let toId = chatUser?.uid else { return }
         
-        let document = FirebaseManager.shared.firestore.collection("messages").document(fromId).collection(toId).document()
+        let document =
+        FirebaseManager.shared.firestore
+            .collection(FirebaseConstants.messages)
+            .document(fromId)
+            .collection(toId)
+            .document()
         
-        let messageData = [FirebaseConstants.fromId: fromId, FirebaseConstants.toId: toId, FirebaseConstants.text: self.chatText, "timestamp": Timestamp()] as [String : Any]
+        let msg = ChatMessage(id: nil, fromId: fromId, toId: toId, text: chatText, timestamp: Date())
         
-        document.setData(messageData) { error in
+        try? document.setData(from: msg) { error in
             if let error = error {
                 print(error)
                 self.errorMessage = "Failed to save message into Firestore: \(error)"
@@ -83,9 +89,14 @@ class ChatLogViewModel: ObservableObject {
             self.count += 1
             
         }
-        let recipientMessageDocument = FirebaseManager.shared.firestore.collection("messages").document(toId).collection(fromId).document()
+        let recipientMessageDocument =
+        FirebaseManager.shared.firestore
+            .collection("messages")
+            .document(toId)
+            .collection(fromId)
+            .document()
         
-        recipientMessageDocument.setData(messageData) { error in
+        try? recipientMessageDocument.setData(from: msg) { error in
             if let error = error {
                 print(error)
                 self.errorMessage = "Failed to save message into Firestore: \(error)"
@@ -103,9 +114,9 @@ class ChatLogViewModel: ObservableObject {
         guard let toId = self.chatUser?.uid else { return }
         
         let document = FirebaseManager.shared.firestore
-            .collection("recent_messages")
+            .collection(FirebaseConstants.recentMessages)
             .document(uid)
-            .collection("messages")
+            .collection(FirebaseConstants.messages)
             .document(toId)
         
         let data = [
