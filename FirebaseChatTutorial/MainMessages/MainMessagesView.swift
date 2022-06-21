@@ -112,6 +112,7 @@ struct MainMessagesView: View {
                 
                 NavigationLink("", isActive: $shouldNavigateToChatLogView) {
                     ChatLogView(chatUser: self.chatUser)
+                    ChatLogView(vm: .init(chatUser: <#T##ChatUser?#>)
                 }
         }
                 .overlay(
